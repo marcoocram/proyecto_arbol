@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Proyecto Arbol</title>
+
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+	<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+	<script src="farbtastic/farbtastic.js"></script>
+	<link href="farbtastic/farbtastic.css" type="text/css" rel="stylesheet" />
+
+	<script type="text/javascript">  
+	    var socket = io();
+
+		$(document).ready(function() {
+			change_color($("#color").val());
+
+			$('#colorpicker').farbtastic('#color');
+
+			$('#colorpicker').on('mousedown mouseup', function() {
+				change_color($("#color").val());
+			});
+
+			if (window.DeviceOrientationEvent) {
+			    window.addEventListener("deviceorientation", function () {
+			    	mod_orientation(event.beta, event.gamma);
+			    }, true);
+			} else if (window.DeviceMotionEvent) {
+			    window.addEventListener('devicemotion', function () {
+			    	mod_orientation(event.acceleration.x * 2, event.acceleration.y * 2);
+			    }, true);
+			} else {
+			    window.addEventListener("MozOrientation", function () {
+			    	mod_orientation(orientation.x * 50, orientation.y * 50);
+			    }, true);
+			}
+		});
+
+
+        function change_color(color) {
+            socket.emit('change_color', { color: color });
+        }
+
+        function turn_off() {
+            socket.emit('turn_off');
+        }
+
+        function mod_orientation(x, y) {
+            socket.emit('light_position', { x: Math.round(x), y: Math.round(y) });
+
+	    	$("#x").html(Math.round(x));
+	    	$("#y").html(Math.round(y));
+        }
+	</script>
+
+</head>
+<body>
+	<form>
+		<input type="text" id="color" name="color" value="#000000" style="display: none" />
+	</form>
+
+	<div style="text-align: center; width: 195px; height: 195px; margin: 0px auto">
+		<div id="colorpicker"></div>
+
+		<br /><br />
+		<button onClick="turn_off()">APAGAR</button>
+
+		<br /><br />
+		<table border="1" style="width: 50%; margin: 0px auto;">
+			<tr>
+				<td id="x" style="width: 50%; text-align: center">0</td>
+				<td id="y" style="width: 50%; text-align: center">0</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
