@@ -16,15 +16,25 @@
 	    var socket = io();
 
 		$(document).ready(function() {
+			change_color($("#color").val());
+
 			$('#colorpicker').farbtastic('#color');
+
+			$('#colorpicker').on('mousedown mouseup', function() {
+				change_color($("#color").val());
+			});
 		});
+
+        function change_color(color) {
+            //socket.emit('change_color', { color: color });
+        }
 
         function turn_off() {
             socket.emit('turn_off');
         }
 
         function insert_led() {
-        	socket.emit('insert_led', { color: $("#color").val(), n: $("#n_led").val() - 1 })
+        	socket.emit('insert_led', { color: $("#color").val() })
         }
 	</script>
 
@@ -38,7 +48,6 @@
 		<div id="colorpicker"></div>
 
 		<br /><br />
-		<input type="number" id="n_led" value="1">
 		<button onClick="insert_led()">INSERTAR LED</button>
 		<button onClick="turn_off()">APAGAR</button>
 	</div>

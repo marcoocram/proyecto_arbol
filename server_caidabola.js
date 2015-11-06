@@ -61,19 +61,23 @@ var board = new firmata.Board('/dev/ttyACM0',function() {
 
             socket.on('insert_led', function(data) {
                 color = data.color;
-                active_led = data.n;
+                active_led = NUM_LEDS - 1;
 
                 console.log("INSERTANDO LED: " + active_led);
 
-                if(active_led < NUM_LEDS && active_led >= 0){ // && !leds[active_led].active) {
-                    leds[active_led].color  = "#000000";
-                    leds[active_led].color  = color;
-                    leds[active_led].active = 1;
+                var interval = setInterval(function() {
+                    if(active_led - 1 >= 0 && !leds[active_led - 1].active) {
+                        leds[active_led].color = "#000000";
+                        active_led--;
+                        leds[active_led].color = color;
 
-                    colorize();
-                } else {
-                    console.log("Led erroneo o ya activado");
-                }
+                        colorize();
+                    } else {
+                        console.log("FIN");
+                        leds[active_led].active = 1;
+                        clearInterval(interval);
+                    }
+                }, 100);
             });
 
             socket.on('turn_off', function(data) {
