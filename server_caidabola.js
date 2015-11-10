@@ -12,7 +12,7 @@ var strip = null;
 var NUM_LEDS = 150;
 
 app.get('/', function(req, res){
-    res.sendfile('index.html');
+    res.sendfile('index_caidabola.html');
 });
 
 app.use(express.static('public'));
@@ -67,17 +67,27 @@ var board = new firmata.Board('/dev/ttyACM0',function() {
 
                 var interval = setInterval(function() {
                     if(active_led - 1 >= 0 && !leds[active_led - 1].active) {
+                        /*
                         leds[active_led].color = "#000000";
                         active_led--;
                         leds[active_led].color = color;
+                        */
 
-                        colorize();
+                        var p = strip.pixel(active_led);
+                        p.color("#000000");
+                        active_led--;
+                        var p2 = strip.pixel(active_led);
+                        p2.color(color);
+
+                        strip.show();
+
+                        //colorize();
                     } else {
                         console.log("FIN");
                         leds[active_led].active = 1;
                         clearInterval(interval);
                     }
-                }, 100);
+                }, 60);
             });
 
             socket.on('turn_off', function(data) {
